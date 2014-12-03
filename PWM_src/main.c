@@ -1,70 +1,25 @@
-/*
-  ******************************************************************************
-  * @file    main.c 
-  * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    19-September-2011
-  * @brief   Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPEEXTI0_IRQHandlerCT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-  *
-  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
-  ******************************************************************************
-  */ 
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
-//Library config for this project!!!!!!!!!!!
+
 #include "stm32f4xx_conf.h"
 
-/** @addtogroup STM32F4-Discovery_PWM_Output_Demo
-  * @{
-  */
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-
-
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
-
-/* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
 void TIM_Configuration(void);
 void GPIO_Configuration(void);
-void Interrupts_Configuration(void);
+
 
 void demo1(void);
 void demo2(void);
-/* Private functions ---------------------------------------------------------*/
 
-/**
-  * @brief  Main program.
-  * @param  None
-  * @retval None
-  */
-
- static uint16_t pulse = 60;    
-
-
-
+static uint16_t pulse = 42;    
 
 int main(void)
 {
  
 demo1();
 	
- 
-  return(0); // System will implode
 }   
   
   
@@ -75,6 +30,7 @@ void demo1(void)
 	
 	 int n=1;
 	 int brightness=0;
+	
 	while(1)
 	{	
 		 if (((brightness + n) >= 1680) || ((brightness + n) <= 0))
@@ -100,11 +56,12 @@ void demo2(void)
 
   while(1)  // Do not exit
   {
-	TIM4->CCR1=pulse;
+	TIM4->CCR1=pulse; //ang0
 	
 	for(i=0;i<30000000;i++);  // delay
 	
-	TIM4->CCR1=pulse+82;
+	//TIM4->CCR1=pulse+84; //ang90
+	TIM4->CCR1=pulse+168; //ang180
 	
 	for(i=0;i<30000000;i++);  // delay
   }
@@ -113,7 +70,6 @@ void demo2(void)
 void RCC_Configuration(void)
 {
    	RCC_AHB1PeriphClockCmd(  RCC_AHB1Periph_GPIOB , ENABLE );
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG , ENABLE );
    	RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM4, ENABLE );
 }
 
@@ -137,11 +93,7 @@ void GPIO_Configuration(void)
 
  }
 
-/**
-  * @brief  configure the TIM4 for PWM mode
-  * @param  None
-  * @retval None
-  */
+
 void TIM_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
@@ -153,7 +105,7 @@ void TIM_Configuration(void)
     TIM_TimeBaseStructInit( &TIM_TimeBaseInitStruct );
     TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV4;
     TIM_TimeBaseInitStruct.TIM_Period = 1680 - 1;   //84000000/1680*1000=50hz  20ms for duty cycle
-    TIM_TimeBaseInitStruct.TIM_Prescaler = 1000 - 1; 
+    TIM_TimeBaseInitStruct.TIM_Prescaler = 500 - 1; 
     TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;    
     TIM_TimeBaseInit( TIM4, &TIM_TimeBaseInitStruct );
     
@@ -166,8 +118,7 @@ void TIM_Configuration(void)
     TIM_OCInitStruct.TIM_Pulse = 65535; //(0=Always Off, 65535=Always On)
  
     TIM_OC1Init( TIM4, &TIM_OCInitStruct ); // Channel 1  LED
-    TIM_OC2Init( TIM4, &TIM_OCInitStruct ); // Channel 1  LED
-   
+    
  
     TIM_Cmd( TIM4, ENABLE );
 }
