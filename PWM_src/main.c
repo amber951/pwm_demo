@@ -41,7 +41,7 @@ void demo1(void)
   		TIM4->CCR1 = brightness - 1; // set brightness
 		
 		int i;
-	   	for(i=0;i<200000;i++);  // delay about 1.6M instruction ->0.0sec
+	   	for(i=0;i<200000;i++);  // delay about 1.6M instruction ->0.0086sec
 	}
 
 }
