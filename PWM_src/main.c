@@ -18,7 +18,7 @@ static uint16_t pulse = 42;
 int main(void)
 {
  
-demo1();
+demo2();
 	
 }   
   
@@ -41,7 +41,7 @@ void demo1(void)
   		TIM4->CCR1 = brightness - 1; // set brightness
 		
 		int i;
-	   	for(i=0;i<200000;i++);  // delay
+	   	for(i=0;i<200000;i++);  // delay about 1.6M instruction ->0.0sec
 	}
 
 }
@@ -56,9 +56,9 @@ void demo2(void)
 
   while(1)  // Do not exit
   {
-	TIM4->CCR1=pulse; //ang0
+	TIM4->CCR1=pulse; //ang0 //pulse=42
 	
-	for(i=0;i<30000000;i++);  // delay
+	for(i=0;i<30000000;i++);  // delay about 24M instruction ->1.3sec
 	
 	//TIM4->CCR1=pulse+84; //ang90
 	TIM4->CCR1=pulse+168; //ang180
@@ -69,8 +69,8 @@ void demo2(void)
 
 void RCC_Configuration(void)
 {
-   	RCC_AHB1PeriphClockCmd(  RCC_AHB1Periph_GPIOB , ENABLE );
-   	RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM4, ENABLE );
+   	RCC_AHB1PeriphClockCmd(  RCC_AHB1Periph_GPIOB , ENABLE ); //Enalbe AHB for GPIOB
+   	RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM4, ENABLE ); //Enable APB for TIM4
 }
 
 /**
@@ -104,8 +104,8 @@ void TIM_Configuration(void)
     // Solving for prescaler gives 240.
     TIM_TimeBaseStructInit( &TIM_TimeBaseInitStruct );
     TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV4;
-    TIM_TimeBaseInitStruct.TIM_Period = 1680 - 1;   //84000000/1680*1000=50hz  20ms for duty cycle
-    TIM_TimeBaseInitStruct.TIM_Prescaler = 500 - 1; 
+    TIM_TimeBaseInitStruct.TIM_Period = 1680 - 1;   //84000000/1680*1000=50hz  20ms for cycle
+    TIM_TimeBaseInitStruct.TIM_Prescaler = 1000 - 1; 
     TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;    
     TIM_TimeBaseInit( TIM4, &TIM_TimeBaseInitStruct );
     
@@ -115,7 +115,7 @@ void TIM_Configuration(void)
     
     // Initial duty cycle equals 0%. Value can range from zero to 65535.
     //TIM_Pulse = TIM4_CCR1 register (16 bits)
-    TIM_OCInitStruct.TIM_Pulse = 65535; //(0=Always Off, 65535=Always On)
+    TIM_OCInitStruct.TIM_Pulse = 0; //(0=Always Off, 65535=Always On)
  
     TIM_OC1Init( TIM4, &TIM_OCInitStruct ); // Channel 1  LED
     
